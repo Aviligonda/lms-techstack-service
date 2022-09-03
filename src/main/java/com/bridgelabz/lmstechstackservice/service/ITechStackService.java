@@ -3,6 +3,7 @@ package com.bridgelabz.lmstechstackservice.service;
 
 import com.bridgelabz.lmstechstackservice.dto.TechStackDto;
 import com.bridgelabz.lmstechstackservice.model.TechStackModel;
+import com.bridgelabz.lmstechstackservice.util.Response;
 
 import java.util.List;
 /*
@@ -12,12 +13,12 @@ import java.util.List;
  * */
 
 public interface ITechStackService {
-    TechStackModel addTechStack(TechStackDto techStackDto);
+    Response addTechStack(String token, TechStackDto techStackDto);
 
-    List<TechStackModel> getAllTechStacks();
+    List<TechStackModel> getAllTechStacks(String token);
 
-    TechStackModel updateTechStack(Long id, TechStackDto techStackDto);
+    Response updateTechStack(String token, Long id, TechStackDto techStackDto);
 
-    TechStackModel deleteTechStack(Long id);
+    Response deleteTechStack(String token, Long id);
 
 }

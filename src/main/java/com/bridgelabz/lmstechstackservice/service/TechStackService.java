@@ -1,11 +1,14 @@
 package com.bridgelabz.lmstechstackservice.service;
+
 import com.bridgelabz.lmstechstackservice.dto.TechStackDto;
 import com.bridgelabz.lmstechstackservice.exception.LMSException;
 import com.bridgelabz.lmstechstackservice.model.TechStackModel;
 import com.bridgelabz.lmstechstackservice.repository.TechStackRepository;
+import com.bridgelabz.lmstechstackservice.util.Response;
 import com.bridgelabz.lmstechstackservice.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +25,8 @@ public class TechStackService implements ITechStackService {
     TokenUtil tokenUtil;
     @Autowired
     TechStackRepository techStackRepository;
+    @Autowired
+    RestTemplate restTemplate;
 
     /*
      * Purpose : Implement the Logic of Creating TechStack Details
@@ -29,12 +34,16 @@ public class TechStackService implements ITechStackService {
      * @Param :  token and techStackDTO
      * */
     @Override
-    public TechStackModel addTechStack(TechStackDto techStackDto) {
+    public Response addTechStack(String token, TechStackDto techStackDto) {
+        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        if (isUserPresent) {
             TechStackModel techStackModel = new TechStackModel(techStackDto);
             techStackModel.setCreatorStamp(LocalDateTime.now());
             techStackRepository.save(techStackModel);
-            return techStackModel;
+            return new Response(200, "Success", techStackModel);
         }
+        throw new LMSException(400, " token is wrong");
+    }
 
     /*
      * Purpose : Implement the Logic of Get All TechStack Details
@@ -42,7 +51,9 @@ public class TechStackService implements ITechStackService {
      * @Param :  token
      * */
     @Override
-    public List<TechStackModel> getAllTechStacks() {
+    public List<TechStackModel> getAllTechStacks(String token) {
+        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        if (isUserPresent) {
             List<TechStackModel> isTechStack = techStackRepository.findAll();
             if (isTechStack.size() > 0) {
                 return isTechStack;
@@ -50,6 +61,8 @@ public class TechStackService implements ITechStackService {
                 throw new LMSException(400, "No TechStacks Found");
             }
         }
+        throw new LMSException(400, "Token Wrong");
+    }
 
     /*
      * Purpose : Implement the Logic of Update TechStack Details
@@ -57,7 +70,9 @@ public class TechStackService implements ITechStackService {
      * @Param :  token,id and techStackDto
      * */
     @Override
-    public TechStackModel updateTechStack(Long id, TechStackDto techStackDto) {
+    public Response updateTechStack(String token, Long id, TechStackDto techStackDto) {
+        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        if (isUserPresent) {
             Optional<TechStackModel> isTechStack = techStackRepository.findById(id);
             if (isTechStack.isPresent()) {
                 isTechStack.get().setTechName(techStackDto.getTechName());
@@ -65,11 +80,14 @@ public class TechStackService implements ITechStackService {
                 isTechStack.get().setStatus(techStackDto.isStatus());
                 isTechStack.get().setUpdateTimeStamp(LocalDateTime.now());
                 techStackRepository.save(isTechStack.get());
-                return isTechStack.get();
+                return new Response(200, "Success", isTechStack.get());
             } else {
                 throw new LMSException(400, "Not found techStack with this id");
             }
         }
+        throw new LMSException(400, "Token Wrong");
+
+    }
 
     /*
      * Purpose : Implement the Logic of Delete TechStack Details
@@ -77,13 +95,18 @@ public class TechStackService implements ITechStackService {
      * @Param :  token and bankDetailsDTO
      * */
     @Override
-    public TechStackModel deleteTechStack(Long id) {
+    public Response deleteTechStack(String token, Long id) {
+        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        if (isUserPresent) {
             Optional<TechStackModel> isTechStack = techStackRepository.findById(id);
             if (isTechStack.isPresent()) {
                 techStackRepository.delete(isTechStack.get());
-                return isTechStack.get();
+                return new Response(200, "Success", isTechStack);
             } else {
                 throw new LMSException(400, "Not found techStack with this id");
             }
+
         }
+        throw new LMSException(400, "Token Wrong");
+    }
 }
