@@ -35,7 +35,7 @@ public class TechStackService implements ITechStackService {
      * */
     @Override
     public Response addTechStack(String token, TechStackDto techStackDto) {
-        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        boolean isUserPresent = restTemplate.getForObject("http://ADMIN-SERVICE:8080/admin/validate/" + token, Boolean.class);
         if (isUserPresent) {
             TechStackModel techStackModel = new TechStackModel(techStackDto);
             techStackModel.setCreatorStamp(LocalDateTime.now());
@@ -52,7 +52,7 @@ public class TechStackService implements ITechStackService {
      * */
     @Override
     public List<TechStackModel> getAllTechStacks(String token) {
-        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        boolean isUserPresent = restTemplate.getForObject("http://ADMIN-SERVICE:8080/admin/validate/" + token, Boolean.class);
         if (isUserPresent) {
             List<TechStackModel> isTechStack = techStackRepository.findAll();
             if (isTechStack.size() > 0) {
@@ -71,7 +71,7 @@ public class TechStackService implements ITechStackService {
      * */
     @Override
     public Response updateTechStack(String token, Long id, TechStackDto techStackDto) {
-        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        boolean isUserPresent = restTemplate.getForObject("http://ADMIN-SERVICE:8080/admin/validate/" + token, Boolean.class);
         if (isUserPresent) {
             Optional<TechStackModel> isTechStack = techStackRepository.findById(id);
             if (isTechStack.isPresent()) {
@@ -96,7 +96,7 @@ public class TechStackService implements ITechStackService {
      * */
     @Override
     public Response deleteTechStack(String token, Long id) {
-        boolean isUserPresent = restTemplate.getForObject("http://localhost:8080/admin/validate/" + token, Boolean.class);
+        boolean isUserPresent = restTemplate.getForObject("http://ADMIN-SERVICE:8080/admin/validate/" + token, Boolean.class);
         if (isUserPresent) {
             Optional<TechStackModel> isTechStack = techStackRepository.findById(id);
             if (isTechStack.isPresent()) {
